@@ -15,8 +15,18 @@ import { WinnerModal } from "./components/WinnerModal";
  */
 
 function App() {
-    const [board, setBoard] = useState(Array(9).fill(null));
-    const [turn, setTurn] = useState(TURNS.X);
+    Array(9).fill(null);
+    const [board, setBoard] = useState(() => {
+        const boardFromStorage = window.localStorage.getItem("board");
+        return boardFromStorage
+            ? JSON.parse(boardFromStorage)
+            : Array(9).fill(null);
+    });
+
+    const [turn, setTurn] = useState(() => {
+        const turnFromStorage = window.localStorage.getItem("turn");
+        return turnFromStorage ?? TURNS.X;
+    });
     // * null es que no hay ganador, false es que es empate y true hay ganador
     const [winner, setWinner] = useState(null);
 
@@ -38,6 +48,11 @@ function App() {
         //Cambiar el turno
         const newTurn = turn === TURNS.X ? TURNS.O : TURNS.X;
         setTurn(newTurn);
+
+        //Guardar partida en el LocalStorage
+
+        window.localStorage.setItem("board", JSON.stringify(newBoard));
+        window.localStorage.setItem("turn", newTurn);
 
         //Revisar si hay ganador
         const newWinner = checkWinner(newBoard);
